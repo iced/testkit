@@ -1,6 +1,6 @@
 {
   "name": "testkit",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "",
   "main": "testkit.js",
   "scripts": {
