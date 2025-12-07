@@ -1,14 +1,14 @@
 {
   "name": "testkit",
-  "version": "1.0.11",
+  "version": "2.0.0",
   "description": "",
   "main": "testkit.js",
   "scripts": {
-    "start": "npm install && npx wrangler dev --env dev --live-reload",
-    "build": "npx wrangler pages functions build --outdir=./dist/",
-    "start-server": "npm run build && npx wrangler dev --env dev",
-    "test": "node test/test.js",
-    "testkit": "node ./bin/testkit.js --port=8787"
+    "start": "npm install && npx -y wrangler dev --live-reload",
+    "build": "npx -y treeder/flaregun build",
+    "run": "npx -y wrangler dev",
+    "test:run": "node tests/tests.js",
+    "test": "node ./bin/testkit.js --port=8787"
   },
   "bin": "./bin/testkit.js",
   "keywords": [],
@@ -24,10 +24,11 @@
     "prettier": "^3.6.2"
   },
   "prettier": {
-    "tabWidth": 2,
     "semi": false,
     "singleQuote": true,
+    "tabWidth": 2,
     "trailingComma": "all",
-    "printWidth": 120
+    "printWidth": 120,
+    "bracketSameLine": true
   }
 }

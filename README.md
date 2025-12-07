@@ -45,27 +45,27 @@ See full example with auth headers and what not that you can copy and paste at [
 
 ### Running tests
 
-In your package.json, make sure you have your standard "start" script which starts your server.
+In your package.json, make sure you have 3 scripts to run:
 
-And a "test" line that starts your tests.
-
-Then add a "testkit" one:
+- `run` - to run your app
+- `test:run` - to run your tests, assumes that your app is already running.
+- `test` - this starts testkit which will run app with the `run` command then once it is running, it will run `test:run` to run your tests.
 
 ```json
 "scripts": {
-  "start": "npm run build && npx -y wrangler dev --env dev",
-  "test": "node test/test.js",
-  "testkit": "npx -y treeder/testkit --port=8787"
+  "run": "npx -y wrangler dev",
+  "test:run": "node tests/tests.js",
+  "test": "npx -y treeder/testkit --port=8787",
 },
 ```
 
 Then run:
 
 ```sh
-npm run testkit
+npm test
 ```
 
-Add `npm run testkit` to your CI and if it passes, you're good. If it fails, don't merge!
+Add `npm test` to your CI and if it passes, you're good. If it fails, don't merge!
 
 ### Passing data through the tests
 
@@ -77,12 +77,12 @@ Test 1:
 
 ```js
 export async function test1(c) {
-  let myObject = {name: 'john'}
+  let myObject = { name: 'john' }
   return { myObject }
 }
 ```
 
-That return data will be available in any subsequest test.  
+That return data will be available in any subsequest test.
 
 ```js
 export async function test2(c) {
