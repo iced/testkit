@@ -126,8 +126,20 @@ async function run2(args, options) {
   } finally {
     // 4. Once the second process is done (or if an error occurred), shut down the first process
     if (serverProcess) {
-      console.log('\n shutting down server process...')
-      serverProcess.kill('SIGTERM') // Send a termination signal
+      console.log('\nShutting down server process (SIGTERM)...')
+      serverProcess.kill('SIGTERM')
+      // Wait up to 5 seconds for graceful shutdown
+      const waitMs = 5000
+      const pollInterval = 100
+      let waited = 0
+      while (!serverProcess.killed && waited < waitMs) {
+        await new Promise((res) => setTimeout(res, pollInterval))
+        waited += pollInterval
+      }
+      if (!serverProcess.killed) {
+        console.log('Server did not exit after SIGTERM, sending SIGKILL...')
+        serverProcess.kill('SIGKILL')
+      }
     }
   }
 }
