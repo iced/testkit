@@ -126,21 +126,55 @@ async function run2(args, options) {
   } finally {
     // 4. Once the second process is done (or if an error occurred), shut down the first process
     if (serverProcess) {
-      console.log('\nShutting down server process (SIGTERM)...')
-      serverProcess.kill('SIGTERM')
-      // Wait up to 5 seconds for graceful shutdown
-      const waitMs = 5000
-      const pollInterval = 100
-      let waited = 0
-      while (!serverProcess.killed && waited < waitMs) {
-        await new Promise((res) => setTimeout(res, pollInterval))
-        waited += pollInterval
-      }
-      if (!serverProcess.killed) {
-        console.log('Server did not exit after SIGTERM, sending SIGKILL...')
-        serverProcess.kill('SIGKILL')
-      }
+      await gracefulShutdown(serverProcess)
     }
+  }
+}
+
+/**
+ * Gracefully shuts down a child process.
+ * * 1. Sends a termination signal (default: SIGTERM).
+ * 2. Waits for the process to exit.
+ * 3. If the process is still running after the timeout, sends SIGKILL.
+ *
+ * @param {import('child_process').ChildProcess} childProcess - The process to kill
+ * @param {number} timeoutMs - Time to wait before forcing kill (default 5000ms)
+ * @param {string} signal - The initial signal to send (default 'SIGTERM')
+ * @returns {Promise<boolean>} - Resolves true if exited gracefully, false if forced
+ */
+async function gracefulShutdown(childProcess, timeoutMs = 5000, signal = 'SIGTERM') {
+  // 1. If process is already dead, return immediately
+  if (childProcess.exitCode !== null || childProcess.signalCode !== null) {
+    return true
+  }
+
+  // 2. Create the exit promise
+  const exitPromise = new Promise((resolve) => {
+    // If the process exits, we are done
+    childProcess.once('exit', () => resolve(true))
+  })
+
+  // 3. Create the timeout promise
+  const timeoutPromise = new Promise((resolve) => {
+    setTimeout(() => resolve(false), timeoutMs)
+  })
+
+  // 4. Send the initial signal
+  console.log(`Sending ${signal} to process ${childProcess.pid}...`)
+  childProcess.kill(signal)
+
+  // 5. Race: Did it exit, or did we time out?
+  const exitedGracefully = await Promise.race([exitPromise, timeoutPromise])
+
+  if (exitedGracefully) {
+    console.log(`Process ${childProcess.pid} shut down gracefully.`)
+    return true
+  } else {
+    console.warn(`Process ${childProcess.pid} timed out. Sending SIGKILL...`)
+    childProcess.kill('SIGKILL')
+    // Optionally wait for the final exit event just to be clean
+    await exitPromise
+    return false
   }
 }
 
