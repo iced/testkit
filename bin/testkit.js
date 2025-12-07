@@ -83,13 +83,15 @@ async function main() {
   // console.log('command:', command)
   // console.log('args:', args)
 
+  let err = null
   switch (command) {
     case 'run':
-      await run2(args, options)
+      err = await run2(args, options)
       break
     default:
-      await run2(args, options)
+      err = await run2(args, options)
   }
+  process.exit(err ? 1 : 0)
 }
 
 async function run2(args, options) {
@@ -100,6 +102,8 @@ async function run2(args, options) {
   let serverURL = `http://localhost:${options.port}`
   let secondCommand = `npm`
   let secondArgs = ['run', 'test:run']
+
+  let err = null
 
   try {
     // 1. Start the first process (the server)
@@ -125,12 +129,14 @@ async function run2(args, options) {
     // console.log('✅ Second process finished.')
   } catch (error) {
     console.error('❌ An error occurred:', error.message)
+    err = error
   } finally {
     // 4. Once the second process is done (or if an error occurred), shut down the first process
     if (serverProcess) {
       await gracefulShutdown(serverProcess, 5000, 'SIGTERM', true)
     }
   }
+  return err
 }
 
 /**
@@ -187,7 +193,7 @@ async function gracefulShutdown(childProcess, timeoutMs = 5000, signal = 'SIGTER
       try {
         process.kill(-childProcess.pid, 'SIGKILL')
       } catch (e) {
-         // Fallback for Windows or if process group killing fails
+        // Fallback for Windows or if process group killing fails
         childProcess.kill('SIGKILL')
       }
     } else {
