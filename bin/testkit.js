@@ -61,7 +61,7 @@ async function waitForUrl(url, timeout = 60000) {
  */
 async function main() {
   let pargs = process.argv
-  console.log(pargs)
+  // console.log(pargs)
 
   let command = 'run' // default
   let args = pargs.slice(2)
@@ -75,13 +75,13 @@ async function main() {
     }
   }
 
-  console.log('options:', options)
+  // console.log('options:', options)
   if (args.length > 0) {
     command = args[0]
     args = args.slice(1)
   }
-  console.log('command:', command)
-  console.log('args:', args)
+  // console.log('command:', command)
+  // console.log('args:', args)
 
   switch (command) {
     case 'run':
@@ -179,3 +179,4 @@ async function gracefulShutdown(childProcess, timeoutMs = 5000, signal = 'SIGTER
 }
 
 await main()
+console.log('✅ Testkit finished.')
