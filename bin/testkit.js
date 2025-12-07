@@ -99,7 +99,7 @@ async function run2(args, options) {
   let serverArgs = ['run', 'run']
   let serverURL = `http://localhost:${options.port}`
   let secondCommand = `npm`
-  let secondArgs = ['run', 'test']
+  let secondArgs = ['run', 'test:run']
 
   try {
     // 1. Start the first process (the server)

@@ -47,9 +47,9 @@ See full example with auth headers and what not that you can copy and paste at [
 
 In your package.json, make sure you have 3 scripts to run:
 
-- `run` - to run your app
+- `run` - to run your app.
 - `test:run` - to run your tests, assumes that your app is already running.
-- `test` - this starts testkit which will run app with the `run` command then once it is running, it will run `test:run` to run your tests.
+- `test` - this starts testkit which will run app with the `run` command then once it is running, `test:run` will execute to run your tests.
 
 ```json
 "scripts": {
