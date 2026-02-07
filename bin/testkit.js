@@ -97,10 +97,11 @@ async function main() {
 async function run2(args, options) {
   let serverProcess = null
 
-  let serverCommand = `npm`
+  let npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm'
+  let serverCommand = npmCmd
   let serverArgs = ['run', 'run']
   let serverURL = `http://localhost:${options.port}`
-  let secondCommand = `npm`
+  let secondCommand = npmCmd
   let secondArgs = ['run', 'test:run']
 
   let err = null
